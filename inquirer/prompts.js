@@ -1,4 +1,5 @@
 const inquirer = require("inquirer");
+
 function firstPrompt(db) {
   inquirer
     .prompt([
@@ -29,40 +30,40 @@ function firstPrompt(db) {
           viewAllEmployees(db);
           break;
         case "Add employee":
-          viewAllEmployees(db);
+          addEmployee(db);
           break;
         case "Update employee roles":
-          viewAllEmployees(db);
+          updateEmployeeRole(db);
           break;
         case "View all roles":
           viewAllRoles(db);
           break;
         case "Add Role":
-          viewAllEmployees(db);
+          addRole(db);
           break;
         case "View all departments":
           viewAllDepartments(db);
           break;
         case "Add department":
-          viewAllEmployees(db);
+          addDepartment(db);
           break;
         case "View employees by manager":
-          viewAllEmployees(db);
+          viewEmployeesByManager(db);
           break;
         case "View employees by department":
-          viewAllEmployees(db);
+          viewEmployeesByDepartment(db);
           break;
         case "Delete: Departments, Roles, Employees":
-          viewAllEmployees(db);
+          deleteDepartmentRolesEmployees(db);
           break;
         case "Combined salaries":
           combinedSalaries(db);
           break;
         case "Update employee managers":
-          viewAllEmployees(db);
+          updateEmployeeManagers(db);
           break;
         case "Quit":
-          viewAllEmployees(db);
+          quit(db);
           break;
 
         default:
