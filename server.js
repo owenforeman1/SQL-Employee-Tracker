@@ -1,6 +1,4 @@
 const express = require("express");
-// Import and require mysql2
-const mysql = require("mysql2");
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -12,24 +10,12 @@ const cTable = require("console.table");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// Connect to database
-const db = mysql.createConnection(
-  {
-    host: "localhost",
-    // MySQL username,
-    user: "root",
-    // MySQL password
-    password: "bootCamp",
-    database: "employee_db",
-  },
-);
 
 // Query database
 // db.query("SELECT * FROM employee", function (err, results) {
 //   console.log(results);
 // });
 
-// Default response for any other request (Not Found)
 app.use((req, res) => {
   res.status(404).end();
 });
@@ -51,4 +37,4 @@ console.log(`
                                                  
 `);
 
-inquirer.firstPrompt(db);
+inquirer.firstPrompt();
