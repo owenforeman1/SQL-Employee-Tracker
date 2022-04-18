@@ -5,6 +5,8 @@ const mysql = require("mysql2");
 const PORT = process.env.PORT || 3001;
 const app = express();
 
+const inquirer = require("./inquirer/prompts");
+
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -19,19 +21,33 @@ const db = mysql.createConnection(
     password: "bootCamp",
     database: "employee_db",
   },
-  console.log(`Connected to the employee_db database.`)
 );
 
 // Query database
-db.query("SELECT * FROM students", function (err, results) {
-  console.log(results);
-});
+// db.query("SELECT * FROM employee", function (err, results) {
+//   console.log(results);
+// });
 
 // Default response for any other request (Not Found)
 app.use((req, res) => {
   res.status(404).end();
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+console.log(`
+ _______             _                           
+(_______)           | |                          
+ _____   ____  ____ | | ___  _   _ _____ _____   
+|  ___) |    \\|  _ \\| |/ _ \\| | | | ___ | ___ |  
+| |_____| | | | |_| | | |_| | |_| | ____| ____|  
+|_______)_|_|_|  __/ \\_)___/ \\__  |_____)_____)  
+              |_|           (____/               
+ _______                _                        
+(_______)              | |                       
+    _  ____ _____  ____| |  _ _____  ____        
+   | |/ ___|____ |/ ___) |_/ ) ___ |/ ___)       
+   | | |   / ___ ( (___|  _ (| ____| |           
+   |_|_|   \\_____|\\____)_| \\_)_____)_|           
+                                                 
+`);
+
+inquirer.firstPrompt();
