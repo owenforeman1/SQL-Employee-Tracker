@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 3001;
 const app = express();
 
 const inquirer = require("./inquirer/prompts");
+const cTable = require("console.table");
 
 // Express middleware
 app.use(express.urlencoded({ extended: false }));
@@ -50,4 +51,4 @@ console.log(`
                                                  
 `);
 
-inquirer.firstPrompt();
+inquirer.firstPrompt(db);

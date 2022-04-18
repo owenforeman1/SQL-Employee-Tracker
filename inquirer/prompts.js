@@ -1,73 +1,137 @@
 const inquirer = require("inquirer");
-function firstPrompt(params) {
+function firstPrompt(db) {
   inquirer
     .prompt([
       {
-        type: "input",
-        message: "What is your user name?",
-        name: "username",
-      },
-      {
-        type: "languages",
-        message: "What languages do you know?",
-        name: "language",
-      },
-      {
-        type: "communication",
-        message: "What is your preferred method of communication?",
-        name: "confirm",
+        type: "list",
+        message: "What would you like to do?",
+        name: "choices",
+        choices: [
+          "View all employees",
+          "Add employee",
+          "Update employee roles",
+          "View all roles",
+          "Add Role",
+          "View all departments",
+          "Add department",
+          "View employees by manager",
+          "View employees by department",
+          "Delete: Departments, Roles, Employees",
+          "Combined salaries",
+          "Update employee managers",
+          "Quit",
+        ],
       },
     ])
-    .then((response) =>
-      response.confirm === response.password
-        ? console.log("Success!")
-        : console.log("You forgot your password already?!")
-    );
+    .then((response) => {
+      switch (response.choices) {
+        case "View all employees":
+          viewAllEmployees(db);
+          break;
+        case "Add employee":
+          viewAllEmployees(db);
+          break;
+        case "Update employee roles":
+          viewAllEmployees(db);
+          break;
+        case "View all roles":
+          viewAllRoles(db);
+          break;
+        case "Add Role":
+          viewAllEmployees(db);
+          break;
+        case "View all departments":
+          viewAllDepartments(db);
+          break;
+        case "Add department":
+          viewAllEmployees(db);
+          break;
+        case "View employees by manager":
+          viewAllEmployees(db);
+          break;
+        case "View employees by department":
+          viewAllEmployees(db);
+          break;
+        case "Delete: Departments, Roles, Employees":
+          viewAllEmployees(db);
+          break;
+        case "Combined salaries":
+          combinedSalaries(db);
+          break;
+        case "Update employee managers":
+          viewAllEmployees(db);
+          break;
+        case "Quit":
+          viewAllEmployees(db);
+          break;
+
+        default:
+          break;
+      }
+    });
 }
 
-function viewAllEmployees(params) {}
+function viewAllEmployees(db) {
+  db.query("SELECT * FROM employee", function (err, results) {
+    console.table(results);
+    firstPrompt();
+    return results;
+  });
+}
 
-function addEmployee(params) {}
+function addEmployee(db) {}
 
-function updateEmployeeRole(params) {}
+function updateEmployeeRole(db) {}
 
-function viewAllRoles(params) {}
+function viewAllRoles(db) {
+  db.query("SELECT * FROM role", function (err, results) {
+    console.table(results);
+    firstPrompt();
+    return results;
+  });
+}
 
-function addRole(params) {}
+function addRole(db) {}
 
-function viewAllDepartments(params) {}
+function viewAllDepartments(db) {
+  db.query("SELECT * FROM department", function (err, results) {
+    console.table(results);
+    firstPrompt();
+    return results;
+  });
+}
 
-function addDepartment(params) {}
+function addDepartment(db) {}
 
-function viewEmployeesByManager(params) {}
+function viewEmployeesByManager(db) {}
 
-function viewEmployeesByDepartment(params) {}
+function viewEmployeesByDepartment(db) {}
 
-function deleteDepartmentRolesEmployees(params) {}
+function deleteDepartmentRolesEmployees(db) {}
 
 function combinedSalaries(db) {
-  db.query("SELECT SUM(salary) FROM role", function(err, results) {
+  db.query("SELECT SUM(salary) FROM role", function (err, results) {
     console.log(results);
     return results;
   });
 }
 
-function updateEmployeeManagers(params) {}
+function updateEmployeeManagers(db) {}
 
-function quit(params) {}
+function quit(db) {}
 
 module.exports = {
-firstPrompt,
-viewAllEmployees,
-addEmployee,
-updateEmployeeRole,
-viewAllRoles,
-addRole,
-viewAllDepartments,
-addDepartment,
-viewEmployeesByManager,
-viewEmployeesByDepartment,
-deleteDepartmentRolesEmployees,
-combinedSalaries,
-updateEmployeeManagers
-}
+  firstPrompt,
+  viewAllEmployees,
+  addEmployee,
+  updateEmployeeRole,
+  viewAllRoles,
+  addRole,
+  viewAllDepartments,
+  addDepartment,
+  viewEmployeesByManager,
+  viewEmployeesByDepartment,
+  deleteDepartmentRolesEmployees,
+  combinedSalaries,
+  updateEmployeeManagers,
+};
