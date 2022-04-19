@@ -97,7 +97,6 @@ LEFT JOIN Employee manager ON employee.manager_id = manager.id;`,
 }
 
 function addEmployee() {
-  //all roles and managers
   db.query(
     `SELECT * FROM employee WHERE manager_id IS NULL;`,
     function (err, results) {
@@ -124,7 +123,7 @@ function addEmployee() {
               message: "What is their role?",
               choices: function () {
                 let choiceArray = roleResults.map(
-                  (choice) => choice.title + "-" + choice.department_id
+                  (choice) => choice.title + "-" + choice.id
                 );
                 return choiceArray;
               },
