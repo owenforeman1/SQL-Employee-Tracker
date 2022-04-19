@@ -22,4 +22,6 @@ VALUES ("Owen", "Foreman", 003),
        ("Quentin", "Miller", 001),
        ("Wes", "Miller", 004);
 
-UPDATE `employee_db`.`employee` SET `manager_id` = 1 WHERE (`id` > 1);
+UPDATE `employee_db`.`employee` SET `manager_id` = 1 WHERE (`id` = 4);
+UPDATE `employee_db`.`employee` SET `manager_id` = 3 WHERE (`id` = 7);
+UPDATE `employee_db`.`employee` SET `manager_id` = 2 WHERE (`id` = 5);

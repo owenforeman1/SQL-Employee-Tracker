@@ -133,38 +133,41 @@ function addEmployee() {
         return choiceArray;
       },
     },
-  ]).then;
+  ]).then
 }
 
 function updateEmployeeRole() {
-  db.query("SELECT first_name, last_name, role_id, manager_id", function (err, results) {
-    if (err) throw err;
-    console.table(results);
-    inquirer.prompt([
-      {
-        name: "firstname",
-        type: "input",
-        message: "Type the employees first name"
-      },
-      {
-        name: "lastname",
-        type: "input",
-        message: "Type the employees last name"
-      },
-      {
-        name: "role",
-        type: "input",
-        message: "Type the employees role id"
-      },
-      {
-        name: "manager",
-        type: "input",
-        message: "Type the employees manager id"
-      }
-    ]).then((answer) => {
-      
-    })
-  })
+  db.query(
+    "SELECT first_name, last_name, role_id, manager_id",
+    function (err, results) {
+      if (err) throw err;
+      console.table(results);
+      inquirer
+        .prompt([
+          {
+            name: "firstname",
+            type: "input",
+            message: "Type the employees first name",
+          },
+          {
+            name: "lastname",
+            type: "input",
+            message: "Type the employees last name",
+          },
+          {
+            name: "role",
+            type: "input",
+            message: "Type the employees role id",
+          },
+          {
+            name: "manager",
+            type: "input",
+            message: "Type the employees manager id",
+          },
+        ])
+        .then((answer) => {});
+    }
+  );
 }
 
 function viewAllRoles() {
@@ -281,9 +284,10 @@ function deleteDepartmentRolesEmployees() {}
 function combinedSalaries() {
   db.query("SELECT SUM(salary) FROM role", function (err, results) {
     if (err) throw err;
-    console.log(results);
+    console.table(results);
     return results;
   });
+  firstPrompt();
 }
 
 function updateEmployeeManagers() {}
