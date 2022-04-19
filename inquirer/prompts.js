@@ -141,7 +141,6 @@ function addEmployee() {
             },
           ])
           .then((answer) => {
-            console.log(answer);
             db.query(
               "INSERT INTO employee(first_name, last_name, role_id, manager_id ) VALUES(?, ?, ?, ?)",
               [
@@ -270,7 +269,6 @@ function addRole() {
                   departmentChoice.departmentChoice,
                   function (err, results) {
                     if (err) throw err;
-                    console.log(results);
                     db.query(
                       "INSERT INTO role(title, salary, department_id) VALUES(?, ?, ?)",
                       [answer.Title, answer.Salary, results[0].id],
@@ -285,7 +283,6 @@ function addRole() {
               });
           });
         });
-      return results;
     }
   );
 }
@@ -314,7 +311,6 @@ function addDepartment() {
           },
         ])
         .then((answer) => {
-          console.log(answer);
           db.query(
             "INSERT INTO department(name) VALUES(?)",
             answer.newDepartment
@@ -395,7 +391,9 @@ function deleteEmployees() {
           message: "Select an employee",
           choices: function () {
             let choiceArray = results.map(
-              (choice) => choice.first_name + " " + choice.last_name + "-" + choice.id);
+              (choice) =>
+                choice.first_name + " " + choice.last_name + "-" + choice.id
+            );
             return choiceArray;
           },
         },
