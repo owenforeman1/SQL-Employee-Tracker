@@ -28,7 +28,9 @@ function firstPrompt() {
           "Add Role",
           "View all departments",
           "Add department",
-          "Delete: Departments, Roles, Employees",
+          "Delete: Departments",
+          "Delete: Roles",
+          "Delete: Employees",
           "Combined salaries",
           "Quit",
         ],
@@ -57,8 +59,14 @@ function firstPrompt() {
         case "Add department":
           addDepartment();
           break;
-        case "Delete: Departments, Roles, Employees":
-          deleteDepartmentRolesEmployees();
+        case "Delete: Departments":
+          deleteDepartment();
+          break;
+        case "Delete: Roles":
+          deleteRoles();
+          break;
+        case "Delete: Employees":
+          deleteEmployees();
           break;
         case "Combined salaries":
           combinedSalaries();
@@ -318,7 +326,93 @@ function addDepartment() {
   );
 }
 
-function deleteDepartmentRolesEmployees() {}
+function deleteDepartment() {
+  db.query("SELECT * FROM department", function (err, results) {
+    if (err) throw err;
+    console.log(results);
+    inquirer
+      .prompt([
+        {
+          name: "departmentChoice",
+          type: "list",
+          message: "Select a department",
+          choices: function () {
+            let choiceArray = results.map((choice) => choice.name);
+            return choiceArray;
+          },
+        },
+      ])
+      .then((departmentChoice) => {
+        db.query(
+          "DELETE FROM department WHERE name = ?",
+          departmentChoice.departmentChoice,
+          function (err, results) {
+            if (err) throw err;
+            viewAllDepartments();
+          }
+        );
+      });
+  });
+}
+
+function deleteRoles() {
+  db.query("SELECT * FROM role", function (err, results) {
+    if (err) throw err;
+    console.log(results);
+    inquirer
+      .prompt([
+        {
+          name: "roleChoice",
+          type: "list",
+          message: "Select a role",
+          choices: function () {
+            let choiceArray = results.map((choice) => choice.title);
+            return choiceArray;
+          },
+        },
+      ])
+      .then((roleChoice) => {
+        db.query(
+          "DELETE FROM role WHERE title = ?",
+          roleChoice.roleChoice,
+          function (err, results) {
+            if (err) throw err;
+            viewAllRoles();
+          }
+        );
+      });
+  });
+}
+
+function deleteEmployees() {
+  db.query("SELECT * FROM employee", function (err, results) {
+    if (err) throw err;
+    console.log(results);
+    inquirer
+      .prompt([
+        {
+          name: "employeeChoice",
+          type: "list",
+          message: "Select an employee",
+          choices: function () {
+            let choiceArray = results.map(
+              (choice) => choice.first_name + " " + choice.last_name + "-" + choice.id);
+            return choiceArray;
+          },
+        },
+      ])
+      .then((employeeChoice) => {
+        db.query(
+          "DELETE FROM employee WHERE id = ?",
+          employeeChoice.employeeChoice.split("-")[1],
+          function (err, results) {
+            if (err) throw err;
+            viewAllDepartments();
+          }
+        );
+      });
+  });
+}
 
 function combinedSalaries() {
   db.query("SELECT SUM(salary) FROM role", function (err, results) {
@@ -329,7 +423,9 @@ function combinedSalaries() {
   firstPrompt();
 }
 
-function quit() {}
+function quit() {
+  db.end();
+}
 
 //connects to serverjs
 module.exports = {
@@ -341,6 +437,8 @@ module.exports = {
   addRole,
   viewAllDepartments,
   addDepartment,
-  deleteDepartmentRolesEmployees,
+  deleteDepartment,
+  deleteEmployees,
+  deleteRoles,
   combinedSalaries,
 };
