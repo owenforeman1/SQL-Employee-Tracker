@@ -28,11 +28,8 @@ function firstPrompt() {
           "Add Role",
           "View all departments",
           "Add department",
-          "View employees by manager",
-          "View employees by department",
           "Delete: Departments, Roles, Employees",
           "Combined salaries",
-          "Update employee managers",
           "Quit",
         ],
       },
@@ -60,25 +57,15 @@ function firstPrompt() {
         case "Add department":
           addDepartment();
           break;
-        case "View employees by manager":
-          viewEmployeesByManager();
-          break;
-        case "View employees by department":
-          viewEmployeesByDepartment();
-          break;
         case "Delete: Departments, Roles, Employees":
           deleteDepartmentRolesEmployees();
           break;
         case "Combined salaries":
           combinedSalaries();
           break;
-        case "Update employee managers":
-          updateEmployeeManagers();
-          break;
         case "Quit":
           quit();
           break;
-
         default:
           break;
       }
@@ -86,17 +73,12 @@ function firstPrompt() {
 }
 //functions for each option in command line
 function viewAllEmployees() {
-  db.query("SELECT * FROM employee", function (err, results) {
-    if (err) throw err;
-    console.table(results);
-    firstPrompt();
-    return results;
-  });
-}
-
-function addEmployee() {
   db.query(
-    "SELECT id, first_name, last_name, role_id, manager_id FROM employee",
+    `SELECT employee.id, employee.first_name, employee.last_name,role.title, role.salary, department.name AS department, manager.first_name AS ManagerName
+FROM employee 
+LEFT JOIN role ON role.id = employee.role_id
+LEFT JOIN department ON role.department_id = department.id
+LEFT JOIN Employee manager ON employee.manager_id = manager.id;`,
     function (err, results) {
       if (err) throw err;
       console.table(results);
@@ -104,70 +86,131 @@ function addEmployee() {
       return results;
     }
   );
-  inquirer.prompt([
-    {
-      name: "firstname",
-      type: "input",
-      message: "Enter their first name",
-    },
-    {
-      name: "lastname",
-      type: "input",
-      message: "Enter their last name",
-    },
-    {
-      name: "role",
-      type: "list",
-      message: "What is their role?",
-      choices: function () {
-        let choiceArray = results.map((choice) => choice.name);
-        return choiceArray;
-      },
-    },
-    {
-      name: "choice",
-      type: "list",
-      message: "Who is their manager",
-      choices: function () {
-        let choiceArray = results.map((choice) => choice.name);
-        return choiceArray;
-      },
-    },
-  ]).then
 }
 
-function updateEmployeeRole() {
+function addEmployee() {
+  //all roles and managers
   db.query(
-    "SELECT first_name, last_name, role_id, manager_id",
+    `SELECT * FROM employee WHERE manager_id IS NULL;`,
     function (err, results) {
       if (err) throw err;
       console.table(results);
-      inquirer
-        .prompt([
-          {
-            name: "firstname",
-            type: "input",
-            message: "Type the employees first name",
-          },
-          {
-            name: "lastname",
-            type: "input",
-            message: "Type the employees last name",
-          },
-          {
-            name: "role",
-            type: "input",
-            message: "Type the employees role id",
-          },
-          {
-            name: "manager",
-            type: "input",
-            message: "Type the employees manager id",
-          },
-        ])
-        .then((answer) => {});
+      db.query(`SELECT * FROM role;`, function (err, roleResults) {
+        if (err) throw err;
+        console.table(roleResults);
+        inquirer
+          .prompt([
+            {
+              name: "firstname",
+              type: "input",
+              message: "Enter their first name",
+            },
+            {
+              name: "lastname",
+              type: "input",
+              message: "Enter their last name",
+            },
+            {
+              name: "role",
+              type: "list",
+              message: "What is their role?",
+              choices: function () {
+                let choiceArray = roleResults.map(
+                  (choice) => choice.title + "-" + choice.department_id
+                );
+                return choiceArray;
+              },
+            },
+            {
+              name: "manager",
+              type: "list",
+              message: "Who is their manager",
+              choices: function () {
+                let choiceArray = results.map(
+                  (choice) => choice.first_name + "-" + choice.id
+                );
+                return choiceArray;
+              },
+            },
+          ])
+          .then((answer) => {
+            console.log(answer);
+            db.query(
+              "INSERT INTO employee(first_name, last_name, role_id, manager_id ) VALUES(?, ?, ?, ?)",
+              [
+                answer.firstname,
+                answer.lastname,
+                answer.role.split("-")[1],
+                answer.manager.split("-")[1],
+              ],
+              function (err, results) {
+                if (err) throw err;
+                console.log(results);
+                viewAllRoles();
+              }
+            );
+          });
+      });
     }
   );
+}
+
+function updateEmployeeRole() {
+  db.query("SELECT * FROM employee", function (err, results) {
+    if (err) throw err;
+    console.table(results);
+    inquirer
+      .prompt([
+        {
+          name: "name",
+          type: "list",
+          message: "What is the employees name?",
+          choices: function () {
+            let choiceArray = results.map(
+              (choice) =>
+                choice.first_name + " " + choice.last_name + "-" + choice.id
+            );
+            return choiceArray;
+          },
+        },
+      ])
+      .then((employeeAnswer) => {
+        db.query("SELECT * FROM role", function (err, results) {
+          if (err) throw err;
+          console.table(results);
+          inquirer
+            .prompt([
+              {
+                name: "newRole",
+                type: "list",
+                message: "Select a new role for this employee",
+                choices: function () {
+                  let choiceArray = results.map(
+                    (choice) => choice.title + "-" + choice.id
+                  );
+                  return choiceArray;
+                },
+              },
+            ])
+            .then((roleAnswer) => {
+              db.query(
+                `UPDATE employee
+                SET role_id = ? 
+                WHERE id = ?;`,
+                [
+                  roleAnswer.newRole.split("-")[1],
+                  employeeAnswer.name.split("-")[1],
+                ],
+                function (err, results) {
+                  if (err) throw err;
+                  console.table(results);
+                  viewAllEmployees();
+                }
+              );
+            });
+        });
+      });
+  });
 }
 
 function viewAllRoles() {
@@ -275,10 +318,6 @@ function addDepartment() {
   );
 }
 
-function viewEmployeesByManager() {}
-
-function viewEmployeesByDepartment() {}
-
 function deleteDepartmentRolesEmployees() {}
 
 function combinedSalaries() {
@@ -289,8 +328,6 @@ function combinedSalaries() {
   });
   firstPrompt();
 }
-
-function updateEmployeeManagers() {}
 
 function quit() {}
 
@@ -304,9 +341,6 @@ module.exports = {
   addRole,
   viewAllDepartments,
   addDepartment,
-  viewEmployeesByManager,
-  viewEmployeesByDepartment,
   deleteDepartmentRolesEmployees,
   combinedSalaries,
-  updateEmployeeManagers,
 };
